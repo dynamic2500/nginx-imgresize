@@ -33,6 +33,7 @@ typedef struct {
 struct jpeg_ngx_error_mgr {
     struct jpeg_error_mgr pub;
     jmp_buf setjmp_buffer;
+    ngx_http_request_t *r;
 };
 
 
@@ -207,6 +208,7 @@ imgresize_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
     cinfo = &ctx->cinfo;
     jpeg_ngx_src_add_chain(dinfo, in);
 
+    ctx->jerr.r = r;
     if (setjmp(ctx->jerr.setjmp_buffer)) {
         jpeg_abort_compress(&ctx->cinfo);
         jpeg_abort_decompress(&ctx->dinfo);
@@ -462,9 +464,11 @@ get_value_helper(ngx_http_request_t *r, ngx_http_complex_value_t *cv,
 static void
 output_message(j_common_ptr cinfo)
 {
-	char buffer[JMSG_LENGTH_MAX];
-    (*cinfo->err->format_message)(cinfo, buffer);
-    fprintf(stderr, "%s\n", buffer);
+    struct jpeg_ngx_error_mgr *err;
+    err = (struct jpeg_ngx_error_mgr *)cinfo->err;
+    char buffer[JMSG_LENGTH_MAX];
+    (err->pub.format_message)(cinfo, buffer);
+    ngx_log_error(NGX_LOG_ERR, err->r->connection->log, 0, buffer);
 }
 
 
@@ -473,8 +477,8 @@ void error_exit(j_common_ptr dinfo)
 {
     struct jpeg_ngx_error_mgr *err;
     err = (struct jpeg_ngx_error_mgr *)dinfo->err;
-	output_message(dinfo);
-	longjmp(err->setjmp_buffer, 1);
+    output_message(dinfo);
+    longjmp(err->setjmp_buffer, 1);
 }
 
 
