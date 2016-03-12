@@ -6,10 +6,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -606,8 +606,10 @@ void fix_ratio(uint32_t src_width, uint32_t src_height, uint32_t *out_width,
 	height_ratio = *out_height / (double)src_height;
 	if (width_ratio < height_ratio) {
 		*out_height = (uint64_t)src_height * *out_width / src_width;
+		*out_height = *out_height ? *out_height : 1;
 	} else {
 		*out_width = (uint64_t)src_width * *out_height / src_height;
+		*out_width = *out_width ? *out_width : 1;
 	}
 }
 
