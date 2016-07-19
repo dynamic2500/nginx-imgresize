@@ -212,8 +212,8 @@ int yscaler_prealloc_scale(uint32_t in_height, uint32_t out_height,
 /**
  * Utility helpers.
  */
- void fix_ratio(uint32_t src_width, uint32_t src_height, uint32_t *out_width,
- 	uint32_t *out_height);
- int cubic_scale_denom(uint32_t src_dim, uint32_t out_dim);
+void fix_ratio(uint32_t src_width, uint32_t src_height, uint32_t *out_width,
+	uint32_t *out_height);
+int cubic_scale_denom(uint32_t src_dim, uint32_t out_dim);
 
 #endif
